@@ -634,11 +634,12 @@ typedef struct RedisModuleDigest {
 typedef struct redisObject {
     unsigned type:4;// 数据类型
     unsigned encoding:4;// 编码格式，即存储数据使用的数据结构。同一个类型的数据，Redis会根据数据量、占用内存等情况使用不同的编码，最大限度地节省内存。
-    unsigned lru:LRU_BITS; /* LRU time (relative to global lru_clock) or
+    unsigned lru:LRU_BITS; /* 24位，LRU时间戳或LFU计数
+                            * LRU time (relative to global lru_clock) or
                             * LFU data (least significant 8 bits frequency
                             * and most significant 16 bits access time). */
-    int refcount;
-    void *ptr;
+    int refcount;// 引用计数、为了节省内存，Redis会在多处引用同一个redisObject。
+    void *ptr;// 指向实际的数据结构，如sds，真正的数据存储在该数据结构中。
 } robj;
 
 /* The a string name for an object's type as listed above
